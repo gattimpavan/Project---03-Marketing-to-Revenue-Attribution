@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Marketing-to-Revenue Attribution & Funnel Leakage Intelligence</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <div class="brand-logo">
+                <span class="logo-prime">amazon</span>
+                <span class="logo-badge">REVENUE OPS</span>
+            </div>
+            <div class="project-tag">
+                <span class="pulse-indicator"></span>
+                <span>PROJECT - 03: MARKETING-TO-REVENUE ATTRIBUTION</span>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span>Markov AI Attribution Engine: <strong>Active</strong></span>
+            </div>
+            <button id="themeToggleBtn" class="btn-theme-toggle" title="Toggle Light/Dark Theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+            <a href="/api/download-pdf" class="btn btn-primary" id="downloadPdfNavBtn" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download Executive PDF Report</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="dashboard-container">
+        
+        <!-- Executive Banner -->
+        <section class="executive-banner glass-panel">
+            <div class="banner-content">
+                <div class="banner-badge">EXECUTIVE INTELLIGENCE BRIEFING</div>
+                <h1 class="banner-title">Amazon Customer Journey & Revenue Attribution System</h1>
+                <p class="banner-desc">
+                    Diagnosing the <strong>"High Lead Generation vs Low Revenue Growth" Paradox</strong>: Tracing 25,000 multi-touch customer journeys from ad exposure through lead capture, activation, and sales conversion to expose funnel value leakage and eliminate vanity lead waste.
+                </p>
+            </div>
+            <div class="banner-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Analyzed Cohort</span>
+                    <span class="meta-value">25,000 Journeys</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Ingested Leads</span>
+                    <span class="meta-value">17,815 MQLs</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Spend</span>
+                    <span class="meta-value">$4.85M USD</span>
+                </div>
+                <div class="meta-item highlight">
+                    <span class="meta-label">Identified Leakage</span>
+                    <span class="meta-value text-danger" id="bannerLeakageVal">$3.48M</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Scorecard Strip -->
+        <section class="kpi-grid">
+            <div class="kpi-card glass-panel">
+                <div class="kpi-header">
+                    <span class="kpi-title">TOTAL MARKETING SPEND</span>
+                    <span class="kpi-icon">💰</span>
+                </div>
+                <div class="kpi-value" id="kpiTotalSpend">$4,850,000</div>
+                <div class="kpi-subtext">Across 8 omni-channel campaigns</div>
+            </div>
+            <div class="kpi-card glass-panel">
+                <div class="kpi-header">
+                    <span class="kpi-title">INGESTED LEADS (MQL)</span>
+                    <span class="kpi-icon">🎯</span>
+                </div>
+                <div class="kpi-value" id="kpiTotalLeads">17,815</div>
+                <div class="kpi-subtext text-warning"><strong id="kpiVanityLeadShare">46.1%</strong> flagged as Vanity Leads</div>
+            </div>
+            <div class="kpi-card glass-panel">
+                <div class="kpi-header">
+                    <span class="kpi-title">PAID CONVERSIONS</span>
+                    <span class="kpi-icon">🤝</span>
+                </div>
+                <div class="kpi-value text-success" id="kpiTotalConverted">4,785</div>
+                <div class="kpi-subtext">Lead-to-Win Rate: <strong id="kpiConversionRate">26.9%</strong></div>
+            </div>
+            <div class="kpi-card glass-panel">
+                <div class="kpi-header">
+                    <span class="kpi-title">REALIZED REVENUE</span>
+                    <span class="kpi-icon">📈</span>
+                </div>
+                <div class="kpi-value text-amazon" id="kpiTotalRevenue">$10,523,074</div>
+                <div class="kpi-subtext">Blended ROAS: <strong id="kpiBlendedRoas">2.17x</strong></div>
+            </div>
+            <div class="kpi-card glass-panel highlight-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">ESTIMATED DOLLAR LEAKAGE</span>
+                    <span class="kpi-icon">⚠️</span>
+                </div>
+                <div class="kpi-value text-danger" id="kpiDollarLeakage">$3,483,198</div>
+                <div class="kpi-subtext">Unrealized revenue lost at Stage 4 & 5</div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="funnel-tab">1. Full Funnel & Leakage Audit</button>
+            <button class="tab-btn" data-tab="attribution-tab">2. Multi-Touch Attribution (MTA)</button>
+            <button class="tab-btn" data-tab="root-cause-tab">3. AI Leakage & Root-Cause Explorer</button>
+            <button class="tab-btn" data-tab="lead-scorer-tab">4. Interactive AI Lead Scorer</button>
+            <button class="tab-btn" data-tab="simulator-tab">5. Budget Reallocation Simulator</button>
+            <button class="tab-btn" data-tab="roadmap-tab">6. 90-Day Executive Roadmap</button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: FULL FUNNEL & DOLLAR LEAKAGE AUDIT -->
+        <!-- ========================================== -->
+        <div class="tab-pane active" id="funnel-tab">
+            <div class="grid-2-col">
+                <!-- Visual Funnel Breakdown -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Full Customer Journey Funnel Stages</h2>
+                            <p class="card-subtitle">Tracking progression and drop-off rate from Exposure to 12-Month LTV</p>
+                        </div>
+                        <div class="card-badge">25,000 Cohort</div>
+                    </div>
+                    <div class="funnel-visual-container" id="funnelVisualContainer">
+                        <!-- Rendered dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Dollar Leakage & Stage Drop-off Chart -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Quantified Pipeline Dollar Leakage by Stage</h2>
+                            <p class="card-subtitle">Where Amazon's marketing funnel destroys financial value</p>
+                        </div>
+                        <div class="card-badge badge-danger">Total Loss: $3.48M</div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="funnelLeakageChart"></canvas>
+                    </div>
+                    <div class="callout-box alert-warning">
+                        <strong>The Ghost Lead Chasm (Stage 4 Drop-off):</strong> While 17,815 prospects register as leads, <strong>48.9% (8,713 leads) abandon before product activation</strong> (creating API keys, connecting catalogs, or setting up campaigns). This accounts for <strong>$2.99M (86%) of total pipeline leakage</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Funnel Breakdown Table -->
+            <div class="card glass-panel mt-4">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Channel-by-Channel Funnel Health & Vanity Lead Audit</h2>
+                        <p class="card-subtitle">Comparing lead volume, activation rates, paid conversion, and Cost Per Customer (CAC)</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="channelFunnelTable">
+                        <thead>
+                            <tr>
+                                <th>Marketing Channel</th>
+                                <th>Spend ($)</th>
+                                <th>Leads Generated</th>
+                                <th>CPL ($)</th>
+                                <th>Activated Users</th>
+                                <th>Activation %</th>
+                                <th>Paid Customers</th>
+                                <th>CAC ($)</th>
+                                <th>Realized Revenue</th>
+                                <th>ROAS</th>
+                                <th>Vanity Lead %</th>
+                                <th>Funnel Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="channelFunnelTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: MULTI-TOUCH ATTRIBUTION (MTA) -->
+        <!-- ========================================== -->
+        <div class="tab-pane" id="attribution-tab">
+            <div class="card glass-panel mb-4">
+                <div class="attribution-header-flex">
+                    <div>
+                        <h2 class="card-title">Multi-Touch Attribution Engine</h2>
+                        <p class="card-subtitle">Exposing how Last-Touch Attribution distorts ROI vs First-Order Markov Chain Removal Effects</p>
+                    </div>
+                    <div class="model-selector-group">
+                        <label for="attributionModelSelect">Active Model View:</label>
+                        <select id="attributionModelSelect" class="form-select">
+                            <option value="markov_chain" selected>Markov Chain AI (Data-Driven)</option>
+                            <option value="last_touch">Last-Touch Attribution (LTA)</option>
+                            <option value="first_touch">First-Touch Attribution (FTA)</option>
+                            <option value="linear">Linear Attribution (Equal Split)</option>
+                            <option value="position_based">Position-Based (U-Shaped 40/20/40)</option>
+                            <option value="time_decay">Time-Decay (7-Day Half-Life)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2-col">
+                <!-- Attribution Comparison Chart -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <h2 class="card-title">Attributed Revenue by Channel ($ USD)</h2>
+                        <span class="card-badge">Comparison View</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="attributionRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Attribution ROAS Comparison -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <h2 class="card-title">Channel ROAS: Last-Touch vs Markov AI</h2>
+                        <span class="card-badge badge-amazon">Incremental Return</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="attributionRoasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MTA Full Matrix Table -->
+            <div class="card glass-panel mt-4">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Multi-Touch Attribution Matrix & Distortion Index</h2>
+                        <p class="card-subtitle">Quantifying the reporting distortion index between legacy LTA and Markov AI attribution</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="attributionMatrixTable">
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>Spend ($)</th>
+                                <th>First-Touch Rev ($)</th>
+                                <th>Last-Touch Rev ($)</th>
+                                <th>LTA ROAS</th>
+                                <th>Markov AI Rev ($)</th>
+                                <th>Markov AI ROAS</th>
+                                <th>Markov Weight</th>
+                                <th>Removal Effect</th>
+                                <th>LTA Distortion Bias</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attributionMatrixBody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: AI LEAKAGE & ROOT-CAUSE EXPLORER -->
+        <!-- ========================================== -->
+        <div class="tab-pane" id="root-cause-tab">
+            <div class="grid-2-col">
+                <!-- Discrepancy Matrix Quadrant Chart -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Lead Share vs Realized Revenue Share Matrix</h2>
+                            <p class="card-subtitle">Discrepancy Index = Lead Share (%) - Revenue Share (%)</p>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="discrepancyMatrixChart"></canvas>
+                    </div>
+                    <div class="matrix-legend">
+                        <span class="legend-item"><span class="badge-dot dot-danger"></span> Vanity Lead Sink (Discrepancy &gt; +8%)</span>
+                        <span class="legend-item"><span class="badge-dot dot-success"></span> High-Yield Engine (Discrepancy &lt; -4%)</span>
+                        <span class="legend-item"><span class="badge-dot dot-info"></span> Balanced Channel</span>
+                    </div>
+                </div>
+
+                <!-- ML Feature Drivers of Conversion -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">AI Root-Cause Feature Importance</h2>
+                            <p class="card-subtitle">Random Forest machine learning drivers of conversion vs abandonment</p>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="mlFeatureImportanceChart"></canvas>
+                    </div>
+                    <div class="callout-box alert-info">
+                        <strong>AI Discovery:</strong> Multi-touch journey diversity is the single strongest predictor of revenue realization. Prospects exposed to <strong>&ge; 3 channels convert at 3.4x the rate</strong> of single-touch clicks.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Behavioral Failure Patterns Cards -->
+            <div class="card glass-panel mt-4">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Forensic Failure Patterns: Why Amazon Leads Fail to Monetize</h2>
+                        <p class="card-subtitle">Automated root-cause clustering identifying where customer friction occurs</p>
+                    </div>
+                </div>
+                <div class="patterns-grid" id="failurePatternsGrid">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: INTERACTIVE AI LEAD SCORER -->
+        <!-- ========================================== -->
+        <div class="tab-pane" id="lead-scorer-tab">
+            <div class="grid-2-col">
+                <!-- Interactive Lead Test Form -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">AI Lead Quality & Revenue Predictor</h2>
+                            <p class="card-subtitle">Test real-time lead ingestion attributes to predict conversion probability & LTV</p>
+                        </div>
+                        <span class="card-badge badge-amazon">Live AI Inference</span>
+                    </div>
+                    <form id="leadScorerForm" class="scorer-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="leadSegment">Customer Segment:</label>
+                                <select id="leadSegment" class="form-select">
+                                    <option value="Enterprise B2B" selected>Enterprise B2B</option>
+                                    <option value="Mid-Market">Mid-Market</option>
+                                    <option value="SMB Merchant">SMB Merchant</option>
+                                    <option value="Individual Creator">Individual Creator</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="leadChannel">First-Touch Acquisition Channel:</label>
+                                <select id="leadChannel" class="form-select">
+                                    <option value="Paid Search (High Intent)" selected>Paid Search (High Intent)</option>
+                                    <option value="Social Ads (Meta/Instagram)">Social Ads (Meta/Instagram)</option>
+                                    <option value="Amazon DSP / Display">Amazon DSP / Display</option>
+                                    <option value="Prime Video / Streaming Ads">Prime Video / Streaming Ads</option>
+                                    <option value="LinkedIn B2B / Enterprise">LinkedIn B2B / Enterprise</option>
+                                    <option value="Affiliate & Partners">Affiliate & Partners</option>
+                                    <option value="Email & Nurture">Email & Nurture</option>
+                                    <option value="Organic Search / Direct">Organic Search / Direct</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="leadDevice">Device Platform:</label>
+                                <select id="leadDevice" class="form-select">
+                                    <option value="Desktop" selected>Desktop</option>
+                                    <option value="Mobile">Mobile</option>
+                                    <option value="Tablet">Tablet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="leadTouches">Touchpoints in Journey (1 - 5):</label>
+                                <input type="range" id="leadTouches" min="1" max="5" value="3" class="form-range">
+                                <span class="range-value" id="leadTouchesVal">3 Touchpoints</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="leadUniqueChannels">Unique Channels Explored (1 - 4):</label>
+                                <input type="range" id="leadUniqueChannels" min="1" max="4" value="2" class="form-range">
+                                <span class="range-value" id="leadUniqueChannelsVal">2 Channels</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block mt-3" id="scoreLeadBtn">
+                            <span>Run AI Lead Evaluation</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Instant AI Scoring Result Card -->
+                <div class="card glass-panel" id="aiScoringResultCard">
+                    <div class="card-header">
+                        <h2 class="card-title">Real-Time AI Evaluation Verdict</h2>
+                        <span class="card-badge" id="aiVerdictBadge">Awaiting Input</span>
+                    </div>
+                    <div class="scoring-verdict-body">
+                        <div class="verdict-tier-badge" id="verdictTierText">Tier 1: High-Yield Strategic MQL</div>
+                        
+                        <div class="verdict-metrics-row">
+                            <div class="metric-box">
+                                <span class="metric-label">Predicted Conversion Probability</span>
+                                <span class="metric-value text-success" id="verdictProbVal">62.5%</span>
+                            </div>
+                            <div class="metric-box">
+                                <span class="metric-label">Predicted 12-Month LTV</span>
+                                <span class="metric-value text-amazon" id="verdictLtvVal">$5,840</span>
+                            </div>
+                        </div>
+
+                        <div class="verdict-action-box">
+                            <span class="action-title">Recommended Operational Protocol:</span>
+                            <p class="action-desc" id="verdictActionText">
+                                Fast-track to Enterprise Account Executive for immediate consultative demo within 15 minutes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lead Tier Summary Table -->
+            <div class="card glass-panel mt-4">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">AI Lead Quality Tier Benchmark Performance</h2>
+                        <p class="card-subtitle">Evaluating 17,815 scored leads across model-defined commercial tiers</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Lead Quality Tier</th>
+                                <th>Total Leads</th>
+                                <th>Cohort Share %</th>
+                                <th>Actual Win Rate %</th>
+                                <th>Avg Realized Revenue</th>
+                                <th>Avg Predicted 12-Mo LTV</th>
+                                <th>Operational Gating Policy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadTiersTableBody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: WHAT-IF BUDGET REALLOCATION SIMULATOR -->
+        <!-- ========================================== -->
+        <div class="tab-pane" id="simulator-tab">
+            <div class="card glass-panel mb-4">
+                <div class="sim-header-flex">
+                    <div>
+                        <h2 class="card-title">Executive What-If Marketing Budget Simulator</h2>
+                        <p class="card-subtitle">Simulate reallocating Amazon's $4.85M marketing budget based on Markov AI marginal returns</p>
+                    </div>
+                    <div class="preset-btn-group">
+                        <button class="btn btn-outline" id="presetBaseline">Status Quo</button>
+                        <button class="btn btn-preset active" id="presetRecommended">★ AI Attribution-Guided</button>
+                        <button class="btn btn-outline" id="presetEnterprise">B2B Maximizer</button>
+                        <button class="btn btn-outline" id="presetMargin">Profit Preservation</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2-col">
+                <!-- Interactive Sliders -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <h2 class="card-title">Channel Budget Allocation Controls ($)</h2>
+                        <button class="btn btn-sm btn-ghost" id="resetSlidersBtn">Reset</button>
+                    </div>
+                    <div class="sliders-list" id="simSlidersList">
+                        <!-- Sliders rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Simulation Projected Outcomes -->
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <h2 class="card-title">Projected Financial Impact Summary</h2>
+                        <span class="card-badge badge-success" id="simLiftBadge">+$941.8K Net Lift</span>
+                    </div>
+                    <div class="sim-kpi-grid">
+                        <div class="sim-kpi-box">
+                            <span class="sim-kpi-label">Simulated Total Spend</span>
+                            <span class="sim-kpi-val" id="simSpendVal">$5,002,500</span>
+                            <span class="sim-kpi-delta" id="simSpendDelta">+$152.5K (+3.1%)</span>
+                        </div>
+                        <div class="sim-kpi-box">
+                            <span class="sim-kpi-label">Projected Revenue</span>
+                            <span class="sim-kpi-val text-amazon" id="simRevVal">$11,464,956</span>
+                            <span class="sim-kpi-delta text-success" id="simRevDelta">+$941,882 (+8.9%)</span>
+                        </div>
+                        <div class="sim-kpi-box">
+                            <span class="sim-kpi-label">Simulated ROAS</span>
+                            <span class="sim-kpi-val text-success" id="simRoasVal">2.29x</span>
+                            <span class="sim-kpi-delta" id="simRoasDelta">Baseline: 2.17x (+0.12x)</span>
+                        </div>
+                        <div class="sim-kpi-box">
+                            <span class="sim-kpi-label">Vanity Lead Reduction</span>
+                            <span class="sim-kpi-val text-danger" id="simVanityReductionVal">-35.0%</span>
+                            <span class="sim-kpi-delta">Lower junk form submissions</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper mt-3">
+                        <canvas id="simComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: 90-DAY EXECUTIVE ROADMAP -->
+        <!-- ========================================== -->
+        <div class="tab-pane" id="roadmap-tab">
+            <div class="card glass-panel">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Amazon Executive 90-Day Implementation Roadmap</h2>
+                        <p class="card-subtitle">Strategic phased execution plan to eliminate funnel leakage and scale revenue</p>
+                    </div>
+                    <a href="/api/download-pdf" class="btn btn-primary btn-sm">Download PDF Report</a>
+                </div>
+
+                <div class="roadmap-timeline">
+                    <!-- Phase 1 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker phase-1">1</div>
+                        <div class="timeline-content glass-panel">
+                            <div class="timeline-header">
+                                <span class="phase-tag">DAYS 1 - 30</span>
+                                <h3 class="timeline-title">Immediate Deficit Containment & Vanity Spend Trimming</h3>
+                            </div>
+                            <ul class="timeline-list">
+                                <li><strong>Cut Social Ads (Meta) budget by 35% ($420K reduction):</strong> Discontinue broad untargeted mobile click campaigns.</li>
+                                <li><strong>Eliminate promo coupon affiliate partners:</strong> Terminate referral relationships generating &gt;85% churn at trial expiration.</li>
+                                <li><strong>Reallocate $250K to High-Intent Paid Search:</strong> Expand bids on commercial Amazon Web & Merchant keywords.</li>
+                            </ul>
+                            <div class="timeline-footer">
+                                <span>Expected Impact:</span> <strong>-40% reduction in vanity leads; blended CAC drops 14%.</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker phase-2">2</div>
+                        <div class="timeline-content glass-panel">
+                            <div class="timeline-header">
+                                <span class="phase-tag">DAYS 31 - 60</span>
+                                <h3 class="timeline-title">Product Activation Chasm Overhaul & AI Lead Gating</h3>
+                            </div>
+                            <ul class="timeline-list">
+                                <li><strong>Deploy AI Lead Quality Scorer at API Gateway:</strong> Score incoming registrations in real-time.</li>
+                                <li><strong>Gating Policy for Tier 3 Leads:</strong> Require corporate email verification and credit card pre-auth to eliminate bot and promo spam.</li>
+                                <li><strong>Frictionless Enterprise Sandbox:</strong> Provide 1-click cloud sandbox with pre-loaded mock data to double trial activation.</li>
+                            </ul>
+                            <div class="timeline-footer">
+                                <span>Expected Impact:</span> <strong>Stage 4 Activation rises from 51.1% to 64%; recovers $1.2M in pipeline value.</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker phase-3">3</div>
+                        <div class="timeline-content glass-panel">
+                            <div class="timeline-header">
+                                <span class="phase-tag">DAYS 61 - 90</span>
+                                <h3 class="timeline-title">Full-Funnel Orchestration & Multi-Touch Scaling</h3>
+                            </div>
+                            <ul class="timeline-list">
+                                <li><strong>Integrate Markov Attribution into Amazon DSP:</strong> Base bid pricing on marginal removal effect rather than last-click.</li>
+                                <li><strong>Scale Consultative B2B Engineering Outreach:</strong> Deploy technical solutions architects to Tier 1 Enterprise accounts.</li>
+                                <li><strong>Executive Alerting System:</strong> Trigger C-Suite notifications when any campaign exhibits Lead-to-Revenue Discrepancy &gt; 5%.</li>
+                            </ul>
+                            <div class="timeline-footer">
+                                <span>Expected Impact:</span> <strong>Portfolio ROAS expands to 2.29x; captures +$941K in annual incremental revenue.</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p>Project - 03: Marketing-to-Revenue Attribution | Amazon Revenue Operations & Autonomous Intelligence</p>
+            <p class="footer-subtext">Confidential & Proprietary © 2026 Amazon.com, Inc. or its affiliates.</p>
+        </div>
+    </footer>
+
+    <!-- Script loading -->
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
